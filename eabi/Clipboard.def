@@ -1,0 +1,14 @@
+EXPORTS
+	_Z17WriteToClipboardLR3RFsRK6TDesC8 @ 1 NONAME
+	_Z17WriteToClipboardLR3RFsRK7TDesC16 @ 2 NONAME
+	_Z17WriteToClipboardLRK6TDesC8 @ 3 NONAME
+	_Z17WriteToClipboardLRK7TDesC16 @ 4 NONAME
+	_Z18ReadFromClipboardLR3RFs @ 5 NONAME
+	_Z18ReadFromClipboardLv @ 6 NONAME
+	_Z19ReadFromClipboardWLR3RFs @ 7 NONAME
+	_Z19ReadFromClipboardWLv @ 8 NONAME
+	BinFromCbL @ 9 NONAME
+	BinToCbL @ 10 NONAME
+	StrFromCbL @ 11 NONAME
+	StrToCbL @ 12 NONAME
+
