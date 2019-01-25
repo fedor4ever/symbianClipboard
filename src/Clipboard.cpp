@@ -33,9 +33,21 @@
 #include "Clipboard.pan"	  	// panic codes
 
 const TUint32 KDesMaxLimit = 2<<28;
+void InitRFs(RFs &fs);
+
+void InitRFs(RFs &fs)
+{
+	if(fs.Handle())
+		return;
+	CleanupClosePushL(fs);
+	User::LeaveIfError(fs.Connect());
+	CleanupStack::Pop(); //fs
+}
 
 HBufC8* ReadFromClipboardL(RFs & aFs)
 {
+	bool fs0 = aFs.Handle();
+	InitRFs(aFs);
     HBufC8 *result = NULL;
     CClipboard *cb = CClipboard::NewForReadingLC(aFs);
 
@@ -44,14 +56,17 @@ HBufC8* ReadFromClipboardL(RFs & aFs)
     {
         RStoreReadStream stream;
         stream.OpenLC(cb->Store(), stid);
-        const TInt32 size = stream.ReadInt32L();
-        result = HBufC8::NewLC(stream, size);
+
+        const TInt32 size = stream.ReadInt32L(); // first 4 byte contains clipboard size
+        result = HBufC8::NewL(stream, size);
 
         stream.Close();
-        CleanupStack::Pop(); // stream.OpenLC
+        CleanupStack::PopAndDestroy(); // stream.OpenLC
     }
     CleanupStack::PopAndDestroy(cb);
 
+    if(fs0)
+    	aFs.Close();
     return result;
 }
 
@@ -63,6 +78,8 @@ HBufC8* ReadFromClipboardL()
 
 HBufC16* ReadFromClipboardWL(RFs & aFs)
 {
+	bool fs0 = aFs.Handle();
+	InitRFs(aFs);
     HBufC16 *result = NULL;
     CClipboard *cb = CClipboard::NewForReadingLC(aFs);
 
@@ -71,19 +88,24 @@ HBufC16* ReadFromClipboardWL(RFs & aFs)
     {
         RStoreReadStream stream;
         stream.OpenLC(cb->Store(), stid);
-        const TInt32 size = stream.ReadInt32L();
-        result = HBufC::NewLC(size);
-        result->Des().SetLength(size);
 
-        TUnicodeExpander e;
-        TMemoryUnicodeSink sink(&result->Des()[0]);
-        e.ExpandL(sink, stream, size);
+        const TInt32 size = stream.ReadInt32L();
+        result = HBufC::New(size);
+        if(result)
+		{
+			result->Des().SetLength(size);
+			TUnicodeExpander e;
+			TMemoryUnicodeSink sink(&result->Des()[0]);
+			e.ExpandL(sink, stream, size);
+		}
 
         stream.Close();
         CleanupStack::Pop(); // stream.OpenLC
     }
     CleanupStack::PopAndDestroy(cb);
 
+    if(fs0)
+    	aFs.Close();
     return result;
 }
 
@@ -95,12 +117,15 @@ HBufC16* ReadFromClipboardWL()
 
 void WriteToClipboardL(RFs &aFs, const TDesC8 & aBinary)
 {
+	bool fs0 = aFs.Handle();
+	InitRFs(aFs);
     CClipboard *cb = CClipboard::NewForWritingLC(aFs);
 
     RStoreWriteStream stream;
     TStreamId stid = stream.CreateLC(cb->Store());
+    
     stream.WriteInt32L(aBinary.Length());
-
+    stream.WriteL(aBinary);
     stream.WriteInt8L(0); // magic command! :)
 
     stream.CommitL();
@@ -110,10 +135,15 @@ void WriteToClipboardL(RFs &aFs, const TDesC8 & aBinary)
     stream.Close();
     CleanupStack::PopAndDestroy(); // stream.CreateLC
     CleanupStack::PopAndDestroy(cb);
+
+    if(fs0)
+    	aFs.Close();
 }
 
 void WriteToClipboardL(RFs &aFs, const TDesC16 & aText)
 {
+	bool fs0 = aFs.Handle();
+	InitRFs(aFs);
     CClipboard *cb = CClipboard::NewForWritingLC(aFs);
 
     RStoreWriteStream stream;
@@ -135,6 +165,9 @@ void WriteToClipboardL(RFs &aFs, const TDesC16 & aText)
     stream.Close();
     CleanupStack::PopAndDestroy(); // stream.CreateLC
     CleanupStack::PopAndDestroy(cb);
+
+    if(fs0)
+    	aFs.Close();
 }
 
 void WriteToClipboardL(const TDesC16 & dest)
@@ -149,8 +182,11 @@ void WriteToClipboardL(const TDesC8 & dest)
 	return WriteToClipboardL(fs.iObj, dest);
 }
 
-char* StrFromCbL() //utf-8 string
+char* StrFromClb() //utf-8 string
 {
+	char *arr = NULL;
+	
+	TRAPD( err,
 	HBufC16* str = ReadFromClipboardWL();
 	CleanupStack::PushL(str);
 	HBufC8* utf8 = CnvUtfConverter::ConvertFromUnicodeToUtf8L(*str);
@@ -158,36 +194,49 @@ char* StrFromCbL() //utf-8 string
 	CleanupStack::PushL(utf8);
 	
 	TInt strSize = utf8->Size();
-	char *arr = (char *)User::Alloc(strSize + 1);
+	arr = (char *)User::Alloc(strSize + 1);
+	arr[strSize + 1] = '0';
 	utf8->Des().Copy((TUint8*)arr, strSize);
-	memset(arr, '0', strSize + 1);
-	
+			);
+	if((err != KErrNone) && arr)
+		User::Free(arr);
+		
 	return arr;
 }
 
-char* BinFromCbL()
+char* BinFromClb()
 {
+	char *arr = NULL;
+	
+	TRAPD(err,
 	HBufC8 *buf = ReadFromClipboardL();
 	TInt strSize = buf->Size();
 	
-	char *arr = (char *)User::Alloc(strSize + 1);
+	arr = (char *)User::Alloc(strSize + 1);
+	arr[strSize + 1] = '0';
 	buf->Des().Copy((TUint8*)arr, strSize);
-	memset(arr, '0', strSize + 1);
-	
+			);
+	if((err != KErrNone) && arr)
+		User::Free(arr);
+
 	return arr;
 }
 
-void StrToCbL(const char* utf8str)
+void StrToClb(const char* utf8str)
 {
+	TRAP_IGNORE(
 	HBufC16* str =
 			CnvUtfConverter::ConvertToUnicodeFromUtf8L(TPtrC8( (TUint8 *)utf8str ));
 	CleanupStack::PushL(str);
 	WriteToClipboardL(*str);
 	CleanupStack::PopAndDestroy();
+			);
 }
 
-void BinToCbL(const char* binary)
+void BinToClb(const char* binary)
 {
+	TRAP_IGNORE(
 	WriteToClipboardL(TPtrC8( (TUint8 *)binary) );
+			);
 }
 

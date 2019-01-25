@@ -18,7 +18,7 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see http://www.gnu.org/licenses/
- Description : Clipboard.h - CClipboard class header
+ Description : Clipboard.h - Clipboard utility functions header
  ============================================================================
  */
 
@@ -53,11 +53,12 @@ EXPORT_C void WriteToClipboardL(const TDesC16& dest);
 #endif // __cplusplus
 
 extern "C" {
-EXPORT_C char* StrFromCbL(); //utf-8 string
-EXPORT_C char* BinFromCbL();
+// returns NULL if failed and never panics
+EXPORT_C char* StrFromClb(); //utf-8 string
+EXPORT_C char* BinFromClb();
 
-EXPORT_C void StrToCbL(const char* utf8str);
-EXPORT_C void BinToCbL(const char* binary);
+EXPORT_C void StrToClb(const char* utf8str);
+EXPORT_C void BinToClb(const char* binary);
 }
 
 

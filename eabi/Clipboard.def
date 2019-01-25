@@ -7,8 +7,8 @@ EXPORTS
 	_Z18ReadFromClipboardLv @ 6 NONAME
 	_Z19ReadFromClipboardWLR3RFs @ 7 NONAME
 	_Z19ReadFromClipboardWLv @ 8 NONAME
-	BinFromCbL @ 9 NONAME
-	BinToCbL @ 10 NONAME
-	StrFromCbL @ 11 NONAME
-	StrToCbL @ 12 NONAME
+	BinFromClb @ 9 NONAME
+	BinToClb @ 10 NONAME
+	StrFromClb @ 11 NONAME
+	StrToClb @ 12 NONAME
 

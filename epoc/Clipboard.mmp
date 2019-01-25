@@ -56,7 +56,7 @@ SOURCE		  ClipboardDllMain.cpp
 
 nostrictdef
 
-LIBRARY		 euser.lib bafl.lib estor.lib charconv.lib
+LIBRARY		 euser.lib bafl.lib estor.lib charconv.lib efsrv.lib
 
 #ifdef ENABLE_ABIV2_MODE
   DEBUGGABLE_UDEBONLY

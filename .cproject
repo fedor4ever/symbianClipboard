@@ -27,7 +27,7 @@
 <ARGUMENTS_DATA_ID ABLDFREEZEARGSSTORAGE="-r"/>
 <ROM_BUILDER_DATA_ID ROMBUILDWORKINGDIRECTORYSTORAGE="D:\Symbian\S60_5th_Edition_SDK_v1.0\epoc32\rom\"/>
 </storageModule>
-<storageModule filesCache="D:\Symbian\Carbide\workspace\Clipboard\epoc\Clipboard.mmp;D:\Symbian\Carbide\workspace\Clipboard\epoc\bld.inf;" includesCache="D:/Symbian/Carbide/workspace/Clipboard/inc[LOCAL];D:/Symbian/S60_5th_Edition_SDK_v1.0/epoc32/include;" macrosCache="__DLL__;_UNICODE;__SUPPORT_CPP_EXCEPTIONS__;__MARM_ARMV5__;NDEBUG;__SYMBIAN32__;__GCCE__;__MARM__;__SERIES60_3X__;__S60_3X__;__S60_5X__;__EPOC32__;__GENERIC_MARM__;__EABI__;__S60_50__;" moduleId="configDataCache" sourcesCache="/Clipboard/inc;/Clipboard/src;" timestampCache="1547291710906" useMmpMacrosCache="true"/>
+<storageModule filesCache="D:\Symbian\Carbide\workspace\Clipboard\epoc\Clipboard.mmp;D:\Symbian\Carbide\workspace\Clipboard\epoc\bld.inf;" includesCache="D:/Symbian/Carbide/workspace/Clipboard/inc[LOCAL];D:/Symbian/S60_5th_Edition_SDK_v1.0/epoc32/include;" macrosCache="__DLL__;_UNICODE;__SUPPORT_CPP_EXCEPTIONS__;__MARM_ARMV5__;NDEBUG;__SYMBIAN32__;__GCCE__;__MARM__;__SERIES60_3X__;__S60_3X__;__S60_5X__;__EPOC32__;__GENERIC_MARM__;__EABI__;__S60_50__;" moduleId="configDataCache" sourcesCache="/Clipboard/inc;/Clipboard/src;" timestampCache="1548450812515" useMmpMacrosCache="true"/>
 <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
 </cconfiguration>
 </storageModule>
