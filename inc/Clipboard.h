@@ -4,7 +4,7 @@
  Author	  : Fedor Strizhniou
  Copyright   : 
  *  Clipboard tools for Symbian
- Copyright (C) 2018 Fiodar Strizhniou
+ Copyright (C) 2019 Fiodar Strizhniou
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -53,12 +53,15 @@ EXPORT_C void WriteToClipboardL(const TDesC16& dest);
 #endif // __cplusplus
 
 extern "C" {
+// ****** C functions never panics. **********
+	
 // returns NULL if failed and never panics
 EXPORT_C char* StrFromClb(); //utf-8 string
 EXPORT_C char* BinFromClb();
 
-EXPORT_C void StrToClb(const char* utf8str);
-EXPORT_C void BinToClb(const char* binary);
+// return KErrNone on success, otherwise system wide error codes. 
+EXPORT_C TInt StrToClb(const char* utf8str);
+EXPORT_C TInt BinToClb(const char* binary);
 }
 
 

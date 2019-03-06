@@ -4,7 +4,7 @@
  Author	  : Fedor Strizhniou
  Copyright   : 
  *  Clipboard tools for Symbian
- Copyright (C) 2018 Fiodar Strizhniou
+ Copyright (C) 2019 Fiodar Strizhniou
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ void InitRFs(RFs &fs)
 
 HBufC8* ReadFromClipboardL(RFs & aFs)
 {
-	bool fs0 = aFs.Handle();
+	bool hasFs = aFs.Handle();
 	InitRFs(aFs);
     HBufC8 *result = NULL;
     CClipboard *cb = CClipboard::NewForReadingLC(aFs);
@@ -65,7 +65,7 @@ HBufC8* ReadFromClipboardL(RFs & aFs)
     }
     CleanupStack::PopAndDestroy(cb);
 
-    if(fs0)
+    if(hasFs)
     	aFs.Close();
     return result;
 }
@@ -78,7 +78,7 @@ HBufC8* ReadFromClipboardL()
 
 HBufC16* ReadFromClipboardWL(RFs & aFs)
 {
-	bool fs0 = aFs.Handle();
+	bool hasFs = aFs.Handle();
 	InitRFs(aFs);
     HBufC16 *result = NULL;
     CClipboard *cb = CClipboard::NewForReadingLC(aFs);
@@ -104,7 +104,7 @@ HBufC16* ReadFromClipboardWL(RFs & aFs)
     }
     CleanupStack::PopAndDestroy(cb);
 
-    if(fs0)
+    if(hasFs)
     	aFs.Close();
     return result;
 }
@@ -117,7 +117,7 @@ HBufC16* ReadFromClipboardWL()
 
 void WriteToClipboardL(RFs &aFs, const TDesC8 & aBinary)
 {
-	bool fs0 = aFs.Handle();
+	bool hasFs = aFs.Handle();
 	InitRFs(aFs);
     CClipboard *cb = CClipboard::NewForWritingLC(aFs);
 
@@ -136,13 +136,13 @@ void WriteToClipboardL(RFs &aFs, const TDesC8 & aBinary)
     CleanupStack::PopAndDestroy(); // stream.CreateLC
     CleanupStack::PopAndDestroy(cb);
 
-    if(fs0)
+    if(hasFs)
     	aFs.Close();
 }
 
 void WriteToClipboardL(RFs &aFs, const TDesC16 & aText)
 {
-	bool fs0 = aFs.Handle();
+	bool hasFs = aFs.Handle();
 	InitRFs(aFs);
     CClipboard *cb = CClipboard::NewForWritingLC(aFs);
 
@@ -166,7 +166,7 @@ void WriteToClipboardL(RFs &aFs, const TDesC16 & aText)
     CleanupStack::PopAndDestroy(); // stream.CreateLC
     CleanupStack::PopAndDestroy(cb);
 
-    if(fs0)
+    if(hasFs)
     	aFs.Close();
 }
 
@@ -199,8 +199,11 @@ char* StrFromClb() //utf-8 string
 	utf8->Des().Copy((TUint8*)arr, strSize);
 			);
 	if((err != KErrNone) && arr)
+	{
 		User::Free(arr);
-		
+		arr = NULL;
+	}
+
 	return arr;
 }
 
@@ -217,26 +220,31 @@ char* BinFromClb()
 	buf->Des().Copy((TUint8*)arr, strSize);
 			);
 	if((err != KErrNone) && arr)
+	{
 		User::Free(arr);
+		arr = NULL;
+	}
 
 	return arr;
 }
 
-void StrToClb(const char* utf8str)
+TInt StrToClb(const char* utf8str)
 {
-	TRAP_IGNORE(
+	TRAPD(err,
 	HBufC16* str =
 			CnvUtfConverter::ConvertToUnicodeFromUtf8L(TPtrC8( (TUint8 *)utf8str ));
 	CleanupStack::PushL(str);
 	WriteToClipboardL(*str);
 	CleanupStack::PopAndDestroy();
 			);
+	return err;
 }
 
-void BinToClb(const char* binary)
+TInt BinToClb(const char* binary)
 {
-	TRAP_IGNORE(
+	TRAPD(err,
 	WriteToClipboardL(TPtrC8( (TUint8 *)binary) );
 			);
+	return err;
 }
 
